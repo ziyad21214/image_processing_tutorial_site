@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>operations on image histogram</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">معالجة صورة
+        </div>
+        <button class="hamburger" aria-label="تبديل القائمة">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-menu">
+            <ul>
+               <li><a href="index.html">الرئيسية</a></li>
+               <li><a href="point-wise-proc.html">التحويلات النقطية</a></li>
+               <li><a href="hist-ops.html">العمليات على الهيستوغرام</a></li>
+               <li><a href="spatial-dom.html">التعديل في المجال المكاني</a></li>
+               <li><a href="morphology.html">العمليات المورفولوجية</a></li>
+               <li><a href="object-detection.html">كشف الكائنات والقياسات</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h1>العمليات على الهيستوغرام</h1>
+            <article>
+                <h2>توليد وعرض هيستوغرام الصورة</h2>
+                <pre><code class="language-matlab">
+img = imread('cameraman.tif');
+hist = zeros(1,256);
+for i = 1:255
+ pixCount = length(find(img==i));
+ hist(i+1) = pixCount;
+end
+bar(hist)   
+                </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+            </article>
+            <article>
+                <h2>توسيع الهيستوغرام</h2>
+                <pre><code class="language-matlab">
+img = imread('cameraman.tif');
+img = im2double(img);
+minI = prctile(img(:),2);
+maxI = prctile(img(:),98);
+newImg = (img-minI)./(maxI-minI);
+                </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+            </article>
+            <article>
+                <h2>تسوية الهيستوغرام</h2>
+                <pre><code class="language-matlab">
+img = imread('cameraman.tif');
+%إيجاد الهيستوغرام الأصلي
+hist = imhist(img);
+
+%إيجاد الجمع التراكمي
+cumSum = zeros(size(hist));
+cumSum(1) = hist(1);
+for i = 2:length(hist)
+ cumSum(i) = hist(i)+cumSum(i-1);
+end
+
+%التنسيب وإيجاد السويات الجديدة
+normSum = (cumSum-cumSum(1))./...
+(cumSum(end)-cumSum(1))*255;
+normSum = floor(normSum);
+
+%الحصول على الصورة الجديدة
+newImg = img;
+for i = 1:length(normSum)
+ newImg(img==i-1) = normSum(i);
+end
+                </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+            </article>
+        </section>
+    </main>
+
+    < <footer>
+        <p>&copy; 2025 Project Dusk. المحتوى مرخص بموجب <a href="https://creativecommons.org/licenses/by/4.0/deed.ar"
+                target="_blank">CC BY 4.0</a>.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spatial-domain processing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">معالجة صورة
+        </div>
+        <button class="hamburger" aria-label="تبديل القائمة">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-menu">
+            <ul>
+               <li><a href="index.html">الرئيسية</a></li>
+               <li><a href="point-wise-proc.html">التحويلات النقطية</a></li>
+               <li><a href="hist-ops.html">العمليات على الهيستوغرام</a></li>
+               <li><a href="spatial-dom.html">التعديل في المجال المكاني</a></li>
+               <li><a href="morphology.html">العمليات المورفولوجية</a></li>
+               <li><a href="object-detection.html">كشف الكائنات والقياسات</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h1>تعديل الصورة في المجال المكاني</h1>
+            <hr>
+            <h2>التنعيم</h2>
+            <article>
+                <h3>مرشح المتوسط الحسابي</h3>
+                <pre><code class="language-matlab">
+img = imread('cameraman.tif');
+img = im2double(img);
+[rows,cols] = size(img);
+%قناع المرشح
+msk = 1/9*ones(3,3);
+outImg = zeros(size(img));
+
+for r = 2:rows-1
+ for c = 2:cols-1
+  win = img(r-1:r+1,c-1:c+1);
+  outImg(r,c) = sum(msk(:).*win(:));
+ end
+end
+                </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button> 
+            </article>
+            <h2>إزالة الضجيج</h2>
+            <article>
+            <h3>ضجيج الملح والفلفل (مرشح القيمة الوسطى)</h3>
+            <pre><code class="language-matlab">
+img = imread('noisyimg.png');
+img = im2double(img);
+[rows,cols] = size(img);
+outImg = zeros(size(img));
+
+for r = 2:rows-1
+ for c = 2:cols-1
+  win = img(r-1:r+1,c-1:c+1);
+  winVals = sort(win(:));
+  %وسيط عناصر النافذة المنزلقة
+  midVal = winVals(5);
+  outImg(r,c) = midVal;
+ end
+end
+            </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button> 
+            </article>
+            <h2>كشف الحواف</h2>
+            <article>
+            <h3>اعتماداً على المشتق الأول (مرشح بريويت)</h3>
+            <pre><code class="language-matlab">
+img = imread('cameraman.tif');
+img = im2double(img);
+%مركبة بريويت الأفقية
+preX = [-1 0 1;-1 0 1;-1 0 1];
+%مركبة بريويت العمودية
+preY = [-1 -1 -1;0 0 0;1 1 1];
+[rows,cols] = size(img);
+
+for r = 2:rows-1
+ for c = 2:cols-1
+  win = img(r-1:r+1,c-1:c+1);
+  %كشف الحواف العمودية
+  edgesY(r,c) = sum(win(:).*preX(:));
+  %كشف الحواف الأفقية
+  edgesX(r,c) = sum(win(:).*preY(:));
+ end
+end
+
+%قوة الحواف
+edges = sqrt(edgesX.^2+edgesY.^2);
+%اتجاه الحواف
+theta = atan(edgesY./edgesX );
+            </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button> 
+            </article>
+            <article>
+            <h3>اعتماداً على المشتق الثاني (لابلاسيان)</h3>
+            <pre><code class="language-matlab">
+img = imread('cameraman.tif');
+img = im2double(img);
+%قناع مرشح لابلاسيان
+lapMsk = [0 -1 0;-1 4 -1;0 -1 0];
+[rows,cols] = size(img);
+edges = zeros(size(img));
+for r = 2:rows-1
+ for c = 2:cols-1
+  win = img(r-1:r+1,c-1:c+1);
+  edges(r,c) = sum(win(:).*lapMsk(:));
+ end
+end
+            </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button> 
+            </article>
+        </section>
+    </main>
+
+     <footer>
+        <p>&copy; 2025 Project Dusk. المحتوى مرخص بموجب <a href="https://creativecommons.org/licenses/by/4.0/deed.ar"
+                target="_blank">CC BY 4.0</a>.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

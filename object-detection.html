@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>object-detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">معالجة صورة
+        </div>
+        <button class="hamburger" aria-label="تبديل القائمة">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-menu">
+            <ul>
+               <li><a href="index.html">الرئيسية</a></li>
+               <li><a href="point-wise-proc.html">التحويلات النقطية</a></li>
+               <li><a href="hist-ops.html">العمليات على الهيستوغرام</a></li>
+               <li><a href="spatial-dom.html">التعديل في المجال المكاني</a></li>
+               <li><a href="morphology.html">العمليات المورفولوجية</a></li>
+               <li><a href="object-detection.html">كشف الكائنات والقياسات</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="basics">
+            <h1>كشف الكائنات والقياسات</h1>
+            <article>
+                <h2>كشف الكائنات وإيجاد خصائصها (قياساتها)</h2>
+                <pre><code class="language-matlab">
+img = imread('coins.png');
+bw_img = im2bw(img);
+%ردم الثقوب
+bw_img = imfill(bw_img, 'holes');
+%تسمية الكائنات وإيجاد عددها
+[lbls, objs] = bwlabel(bw_img);
+
+%إيجاد خصائص الكائنات
+stats = regionprops(lbls,'all');
+%المساحة
+areas = cat(1, stats.Area)
+%مراكز الثقل
+cents = cat(1, stats.Centroid)
+%المربع المحيط الأدنى
+boundBox = cat(1, stats.BoundingBox)
+%المحيط
+per = cat(1, stats.Perimeter)
+%التراص
+comp = (per.^2)./(4*pi*areas)
+%الاختلاف المركزي
+ecc = cat(1, stats.Eccentricity)
+%الامتداد
+ext = cat(1, stats.Extent)
+                </code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+            </article>
+        </section>
+    </main>
+
+     <footer>
+        <p>&copy; 2025 Project Dusk. المحتوى مرخص بموجب <a href="https://creativecommons.org/licenses/by/4.0/deed.ar"
+                target="_blank">CC BY 4.0</a>.</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
